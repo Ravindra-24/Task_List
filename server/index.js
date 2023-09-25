@@ -25,23 +25,15 @@ app.get("/", (req, res) => {
   res.send(`server is running on ${PORT}`);
 });
 
-app.get("/validateUser", (req, res) => {
-  const { token } = req.headers;
-  if (!token) {
-    return res.status(401).json({
-      message: "Invalid user",
-    });
-  }
+app.get("/keep-alive-endpoint", (req, res) => {
+ 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return res.status(200).json({
-      message: "Valid user",
-      user: decoded,
+      message: "server is running",
     });
   } catch (error) {
-    res.clearCookie("access_token");
     return res.status(401).json({
-      message: "Invalid user",
+      message: "error",
     });
   }
 });
