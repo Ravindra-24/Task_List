@@ -2,12 +2,13 @@ import axios from "axios";
 import store from "../../redux/store";
 import toast from "react-hot-toast";
 
+// Create an instance of axios with a base URL and headers
 export const API = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
-  // timeout: 5000,
   headers: {},
 });
 
+// Request interceptor to add an authorization header for authenticated requests
 API.interceptors.request.use(
   (req) => {
     const auth = store.getState().authReducer;
@@ -23,6 +24,7 @@ API.interceptors.request.use(
   }
 );
 
+// Response interceptor to handle error responses and token expiration
 API.interceptors.response.use(
   (response) => {
     if (response) return response.data;
@@ -31,7 +33,6 @@ API.interceptors.response.use(
     if (error.axiosError) {
       toast.error(error.message);
     }
-    // console.log(error);
     if (error.response.status === 401) {
       store.dispatch({ type: "LOGOUT" });
     }
@@ -39,6 +40,7 @@ API.interceptors.response.use(
   }
 );
 
+// Send a periodic keep-alive request to the server
 setInterval(() => {
   API.get("/keep-alive-endpoint") // Replace with your server's actual endpoint
     .then((response) => {
@@ -56,14 +58,15 @@ setInterval(() => {
     });
 }, 900000);
 
+// Authentication related API functions
 export const validate = (token) => API.get(`/auth/validate/${token}`);
-
 export const signup = (authData) => API.post("/auth/signup", authData);
 export const login = (authData) => API.post("/auth/login", authData);
 export const forgot = (email) => API.post("/auth/forgot-password", email);
 export const reset = (token, password) =>
   API.post(`/auth/reset-password/${token}`, password);
 
+// Task related API functions
 export const createTask = (formData) => API.post("/task", formData);
 export const getAllTasks = () => API.get("/task");
 export const deleteTasks = (todo_id) => API.delete(`/task/${todo_id}`);

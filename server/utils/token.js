@@ -1,29 +1,19 @@
 const jwt = require("jsonwebtoken");
 
+// Function to verify the authenticity of a JWT token
 module.exports.verifyAuthToken = (token) => {
   try {
+    // Verify the token using the SECRET_KEY from environment variables
     const payload = jwt.verify(token, process.env.SECRET_KEY);
     return payload;
   } catch (error) {
+    // Return false if the token is invalid or has expired
     return false;
   }
 };
 
+// Function to generate a new JWT token
 module.exports.generateToken = (payload) => {
+  // Sign the payload with the SECRET_KEY and set an expiration time of 1 hour
   return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "1h" });
 };
-
-// export const generateResetToken = (payload) => {
-//   return jwt.sign(payload, process.env.SECRET_KEY, {
-//     expiresIn: "5m",
-//   });
-// };
-
-// export const verifyResetToken = (token) => {
-//   try {
-//     const payload = jwt.verify(token, process.env.SECRET_KEY);
-//     return payload;
-//   } catch (error) {
-//     return null;
-//   }
-// };
